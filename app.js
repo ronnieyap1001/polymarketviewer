@@ -1,5 +1,6 @@
 const DATA_URL = "data/markets.json";
 const COLUMN_COUNT = 10;
+const EXPORT_MAX_ROWS = 2000; // hard cap regardless of what's typed into the export box
 
 const state = {
   markets: [],
@@ -38,6 +39,9 @@ const els = {
   ratioMax: document.getElementById("ratioMax"),
   vol24hrMin: document.getElementById("vol24hrMin"),
   volumeMin: document.getElementById("volumeMin"),
+  exportLimit: document.getElementById("exportLimit"),
+  exportCsv: document.getElementById("exportCsv"),
+  exportHint: document.getElementById("exportHint"),
 };
 
 function formatMoney(n) {
@@ -104,6 +108,79 @@ function statusInfo(market) {
   return { open: false, label: "Closed", detail };
 }
 
+function csvField(value) {
+  const s = value === null || value === undefined ? "" : String(value);
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+const CSV_HEADERS = [
+  "Category", "Market", "Status", "Result", "Started", "Ends",
+  "Leading Outcome", "Leading %", "Other Outcomes",
+  "Hi/Lo Ratio", "24h Volume", "Total Volume", "URL",
+];
+
+function marketToCsvRow(m) {
+  const lead = leadingOutcome(m);
+  const others = otherOutcomes(m)
+    .map((o) => `${o.label} ${(o.pct * 100).toFixed(0)}%`)
+    .join("; ");
+  const ratio = hiLoRatio(m);
+  const status = statusInfo(m);
+
+  return [
+    m.category,
+    m.question,
+    status.label,
+    status.detail || "",
+    m.startDate ? toDateStr(m.startDate) : "",
+    m.endDate ? toDateStr(m.endDate) : "",
+    lead.label,
+    lead.pct != null ? (lead.pct * 100).toFixed(0) : "",
+    others,
+    ratio === null ? "" : ratio === Infinity ? "Inf" : ratio.toFixed(2),
+    m.volume24hr ?? 0,
+    m.volume ?? 0,
+    m.url,
+  ];
+}
+
+function buildCsv(rows) {
+  const lines = [CSV_HEADERS.map(csvField).join(",")];
+  for (const m of rows) {
+    lines.push(marketToCsvRow(m).map(csvField).join(","));
+  }
+  return lines.join("\r\n");
+}
+
+function exportCsvFile() {
+  const requested = parseInt(els.exportLimit.value, 10);
+  const limit = Number.isFinite(requested) && requested > 0
+    ? Math.min(requested, EXPORT_MAX_ROWS)
+    : 100;
+  els.exportLimit.value = limit;
+
+  const rows = state.filtered.slice(0, limit);
+  if (rows.length === 0) {
+    els.exportHint.textContent = "Nothing to export — adjust your filters.";
+    return;
+  }
+
+  const csv = buildCsv(rows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0, 10);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `polymarket-markets-${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  els.exportHint.textContent = `Exported ${rows.length} of ${state.filtered.length} row${state.filtered.length === 1 ? "" : "s"} in the current view.`;
+}
+
 function render() {
   const {
     search, category, statusFilter,
@@ -111,6 +188,7 @@ function render() {
     ratioMin, ratioMax, vol24hrMin, volumeMin,
   } = state;
   const q = search.trim().toLowerCase();
+  els.exportHint.textContent = "";
 
   state.filtered = state.markets.filter((m) => {
     if (category && m.category !== category) return false;
@@ -304,6 +382,12 @@ els.toggleFilters.addEventListener("click", () => {
   const expanded = els.toggleFilters.getAttribute("aria-expanded") === "true";
   els.toggleFilters.setAttribute("aria-expanded", String(!expanded));
   els.filtersPanel.hidden = expanded;
+});
+
+els.exportCsv.addEventListener("click", exportCsvFile);
+
+els.exportLimit.addEventListener("change", () => {
+  els.exportHint.textContent = "";
 });
 
 els.clearFilters.addEventListener("click", () => {

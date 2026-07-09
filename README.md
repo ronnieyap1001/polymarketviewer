@@ -17,6 +17,10 @@ A simple website that tracks Polymarket markets, refreshed daily, grouped by cat
   filters for start date, end date, Hi/Lo ratio, minimum 24h volume, and minimum total
   volume, with a "Clear filters" button to reset them all.
 
+  An **Export CSV** button downloads the current view (respecting all active filters,
+  search, and sort order) as a CSV file. The row count is capped by the adjacent "Export
+  up to ___ rows" box, which itself is hard-limited to 2000 rows regardless of what's typed in.
+
 ## Running the collector locally
 
 ```sh

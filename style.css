@@ -124,6 +124,47 @@ main {
   background: var(--row-hover);
 }
 
+.export-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.export-limit-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+#exportLimit {
+  width: 5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.85rem;
+}
+
+.export-btn {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.export-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .filter-group {
   display: flex;
   align-items: center;
