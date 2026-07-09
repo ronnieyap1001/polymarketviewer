@@ -28,7 +28,57 @@
         <option value="open">Open only</option>
         <option value="closed">Closed only</option>
       </select>
+      <button id="toggleFilters" type="button" class="filters-toggle" aria-expanded="false">Filters</button>
       <span class="count" id="rowCount"></span>
+    </div>
+
+    <div class="filters-panel" id="filtersPanel" hidden>
+      <div class="filter-group">
+        <span class="filter-label">Started</span>
+        <input id="startFrom" type="date" aria-label="Started on or after" />
+        <span class="filter-sep">–</span>
+        <input id="startTo" type="date" aria-label="Started on or before" />
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Ends</span>
+        <input id="endFrom" type="date" aria-label="Ends on or after" />
+        <span class="filter-sep">–</span>
+        <input id="endTo" type="date" aria-label="Ends on or before" />
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Hi/Lo ratio</span>
+        <input id="ratioMin" type="number" min="1" step="0.1" placeholder="min" aria-label="Minimum hi/lo ratio" />
+        <span class="filter-sep">–</span>
+        <input id="ratioMax" type="number" min="1" step="0.1" placeholder="max" aria-label="Maximum hi/lo ratio" />
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">24h volume</span>
+        <select id="vol24hrMin" aria-label="Minimum 24h volume">
+          <option value="0">Any</option>
+          <option value="1000">$1K+</option>
+          <option value="10000">$10K+</option>
+          <option value="100000">$100K+</option>
+          <option value="1000000">$1M+</option>
+          <option value="10000000">$10M+</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Total volume</span>
+        <select id="volumeMin" aria-label="Minimum total volume">
+          <option value="0">Any</option>
+          <option value="1000">$1K+</option>
+          <option value="10000">$10K+</option>
+          <option value="100000">$100K+</option>
+          <option value="1000000">$1M+</option>
+          <option value="10000000">$10M+</option>
+        </select>
+      </div>
+
+      <button id="clearFilters" type="button" class="clear-filters">Clear filters</button>
     </div>
 
     <div class="table-wrap">

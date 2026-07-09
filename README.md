@@ -13,6 +13,10 @@ A simple website that tracks Polymarket markets, refreshed daily, grouped by cat
   - **Hi/Lo Ratio** — highest outcome probability divided by the lowest, as a quick read on how lopsided a market is (higher = more one-sided)
   - **24h Volume** and **Total Volume**
 
+  Besides the category/status dropdowns and search box, a **Filters** panel adds range
+  filters for start date, end date, Hi/Lo ratio, minimum 24h volume, and minimum total
+  volume, with a "Clear filters" button to reset them all.
+
 ## Running the collector locally
 
 ```sh

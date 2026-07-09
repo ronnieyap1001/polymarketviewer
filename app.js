@@ -7,6 +7,14 @@ const state = {
   category: "",
   search: "",
   statusFilter: "",
+  startFrom: "",
+  startTo: "",
+  endFrom: "",
+  endTo: "",
+  ratioMin: null,
+  ratioMax: null,
+  vol24hrMin: 0,
+  volumeMin: 0,
   sortKey: "volume24hr",
   sortDir: "desc",
 };
@@ -19,6 +27,17 @@ const els = {
   rowCount: document.getElementById("rowCount"),
   tbody: document.getElementById("table-body"),
   headers: document.querySelectorAll("#markets-table th[data-key]"),
+  toggleFilters: document.getElementById("toggleFilters"),
+  filtersPanel: document.getElementById("filtersPanel"),
+  clearFilters: document.getElementById("clearFilters"),
+  startFrom: document.getElementById("startFrom"),
+  startTo: document.getElementById("startTo"),
+  endFrom: document.getElementById("endFrom"),
+  endTo: document.getElementById("endTo"),
+  ratioMin: document.getElementById("ratioMin"),
+  ratioMax: document.getElementById("ratioMax"),
+  vol24hrMin: document.getElementById("vol24hrMin"),
+  volumeMin: document.getElementById("volumeMin"),
 };
 
 function formatMoney(n) {
@@ -33,6 +52,15 @@ function formatDate(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
+// Normalizes any ISO date/datetime string to a plain YYYY-MM-DD string so it
+// can be compared against <input type="date"> values.
+function toDateStr(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
 }
 
 // Outcomes sorted by implied probability, highest first.
@@ -77,7 +105,11 @@ function statusInfo(market) {
 }
 
 function render() {
-  const { search, category, statusFilter } = state;
+  const {
+    search, category, statusFilter,
+    startFrom, startTo, endFrom, endTo,
+    ratioMin, ratioMax, vol24hrMin, volumeMin,
+  } = state;
   const q = search.trim().toLowerCase();
 
   state.filtered = state.markets.filter((m) => {
@@ -85,6 +117,24 @@ function render() {
     if (statusFilter === "open" && m.closed) return false;
     if (statusFilter === "closed" && !m.closed) return false;
     if (q && !m.question.toLowerCase().includes(q)) return false;
+
+    const startStr = toDateStr(m.startDate);
+    if (startFrom && (!startStr || startStr < startFrom)) return false;
+    if (startTo && (!startStr || startStr > startTo)) return false;
+
+    const endStr = toDateStr(m.endDate);
+    if (endFrom && (!endStr || endStr < endFrom)) return false;
+    if (endTo && (!endStr || endStr > endTo)) return false;
+
+    if (ratioMin !== null || ratioMax !== null) {
+      const ratio = hiLoRatio(m);
+      if (ratioMin !== null && (ratio === null || ratio < ratioMin)) return false;
+      if (ratioMax !== null && (ratio === null || ratio > ratioMax)) return false;
+    }
+
+    if (vol24hrMin && (m.volume24hr || 0) < vol24hrMin) return false;
+    if (volumeMin && (m.volume || 0) < volumeMin) return false;
+
     return true;
   });
 
@@ -205,6 +255,71 @@ els.category.addEventListener("change", (e) => {
 
 els.statusFilter.addEventListener("change", (e) => {
   state.statusFilter = e.target.value;
+  render();
+});
+
+function updateFiltersToggleState() {
+  const active =
+    state.startFrom || state.startTo || state.endFrom || state.endTo ||
+    state.ratioMin !== null || state.ratioMax !== null ||
+    state.vol24hrMin || state.volumeMin;
+  els.toggleFilters.classList.toggle("has-active", Boolean(active));
+}
+
+function bindDateFilter(el, key) {
+  el.addEventListener("change", (e) => {
+    state[key] = e.target.value;
+    updateFiltersToggleState();
+    render();
+  });
+}
+
+function bindNumberFilter(el, key) {
+  el.addEventListener("input", (e) => {
+    const v = e.target.value.trim();
+    state[key] = v === "" ? null : Number(v);
+    updateFiltersToggleState();
+    render();
+  });
+}
+
+function bindSelectFilter(el, key) {
+  el.addEventListener("change", (e) => {
+    state[key] = Number(e.target.value);
+    updateFiltersToggleState();
+    render();
+  });
+}
+
+bindDateFilter(els.startFrom, "startFrom");
+bindDateFilter(els.startTo, "startTo");
+bindDateFilter(els.endFrom, "endFrom");
+bindDateFilter(els.endTo, "endTo");
+bindNumberFilter(els.ratioMin, "ratioMin");
+bindNumberFilter(els.ratioMax, "ratioMax");
+bindSelectFilter(els.vol24hrMin, "vol24hrMin");
+bindSelectFilter(els.volumeMin, "volumeMin");
+
+els.toggleFilters.addEventListener("click", () => {
+  const expanded = els.toggleFilters.getAttribute("aria-expanded") === "true";
+  els.toggleFilters.setAttribute("aria-expanded", String(!expanded));
+  els.filtersPanel.hidden = expanded;
+});
+
+els.clearFilters.addEventListener("click", () => {
+  Object.assign(state, {
+    startFrom: "", startTo: "", endFrom: "", endTo: "",
+    ratioMin: null, ratioMax: null, vol24hrMin: 0, volumeMin: 0,
+  });
+  els.startFrom.value = "";
+  els.startTo.value = "";
+  els.endFrom.value = "";
+  els.endTo.value = "";
+  els.ratioMin.value = "";
+  els.ratioMax.value = "";
+  els.vol24hrMin.value = "0";
+  els.volumeMin.value = "0";
+  updateFiltersToggleState();
   render();
 });
 

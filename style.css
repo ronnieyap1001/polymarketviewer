@@ -89,6 +89,84 @@ main {
   margin-left: auto;
 }
 
+.filters-toggle {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filters-toggle:hover { border-color: var(--accent); }
+
+.filters-toggle[aria-expanded="true"] {
+  background: var(--chip-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filters-toggle.has-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filters-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.9rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--row-hover);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.filter-sep {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.85rem;
+}
+
+.filter-group input[type="number"] { width: 4.5rem; }
+.filter-group input[type="date"] { width: 9.5rem; }
+
+.clear-filters {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.clear-filters:hover { color: var(--fg); border-color: var(--accent); }
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border);
