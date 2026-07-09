@@ -23,6 +23,11 @@
       <select id="category" aria-label="Filter by category">
         <option value="">All categories</option>
       </select>
+      <select id="statusFilter" aria-label="Filter by status">
+        <option value="">Open &amp; closed</option>
+        <option value="open">Open only</option>
+        <option value="closed">Closed only</option>
+      </select>
       <span class="count" id="rowCount"></span>
     </div>
 
@@ -32,14 +37,18 @@
           <tr>
             <th data-key="category">Category</th>
             <th data-key="question">Market</th>
+            <th data-key="status">Status</th>
+            <th data-key="startDate">Started</th>
+            <th data-key="endDate">Ends</th>
             <th data-key="leadOutcome">Leading Outcome</th>
+            <th data-key="otherOutcomes">Other Outcomes</th>
+            <th data-key="ratio" class="num">Hi/Lo Ratio</th>
             <th data-key="volume24hr" class="num sort-desc">24h Volume</th>
             <th data-key="volume" class="num">Total Volume</th>
-            <th data-key="endDate">Ends</th>
           </tr>
         </thead>
         <tbody id="table-body">
-          <tr><td colspan="6" class="status">Loading markets&hellip;</td></tr>
+          <tr><td colspan="10" class="status-row">Loading markets&hellip;</td></tr>
         </tbody>
       </table>
     </div>

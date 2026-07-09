@@ -33,6 +33,8 @@ const CATEGORY_TAG_IDS = {
 const PAGE_SIZE = 100;
 const MAX_EVENTS = 1500; // safety cap on how many events we page through per run
 const PER_CATEGORY_LIMIT = 50; // keep the site fast and the JSON small
+const RECENT_CLOSED_SLOTS = 8; // reserved per-category slots for markets that just resolved
+const RECENT_CLOSED_WINDOW_MS = 3 * 24 * 60 * 60 * 1000; // show resolved markets for 3 days
 
 function categoryFor(event) {
   const tags = event.tags || [];
@@ -57,7 +59,6 @@ async function fetchEventsPage(offset) {
   url.searchParams.set("limit", String(PAGE_SIZE));
   url.searchParams.set("offset", String(offset));
   url.searchParams.set("active", "true");
-  url.searchParams.set("closed", "false");
   url.searchParams.set("order", "volume24hr");
   url.searchParams.set("ascending", "false");
 
@@ -82,7 +83,14 @@ async function collect() {
     for (const event of page) {
       const category = categoryFor(event);
       for (const market of event.markets || []) {
-        if (market.closed || seenMarketIds.has(market.id)) continue;
+        if (seenMarketIds.has(market.id)) continue;
+
+        const closed = Boolean(market.closed);
+        const closedTime = market.closedTime ? new Date(market.closedTime).toISOString() : null;
+        if (closed && (!closedTime || Date.now() - new Date(closedTime).getTime() > RECENT_CLOSED_WINDOW_MS)) {
+          // Drop markets that resolved too long ago to be worth showing.
+          continue;
+        }
         seenMarketIds.add(market.id);
 
         markets.push({
@@ -97,7 +105,10 @@ async function collect() {
           volume: Number(market.volumeNum ?? market.volume ?? 0),
           volume24hr: Number(market.volume24hr ?? 0),
           liquidity: Number(market.liquidityNum ?? market.liquidity ?? 0),
+          startDate: market.startDateIso || market.startDate || null,
           endDate: market.endDateIso || market.endDate || null,
+          closed,
+          closedTime,
           url: `https://polymarket.com/event/${event.slug}`,
         });
       }
@@ -107,13 +118,15 @@ async function collect() {
     if (page.length < PAGE_SIZE) break;
   }
 
-  return trimByCategory(markets, PER_CATEGORY_LIMIT);
+  return trimByCategory(markets, PER_CATEGORY_LIMIT, RECENT_CLOSED_SLOTS);
 }
 
-// Keep only the top N markets (by 24h volume) per category so every
-// category stays represented instead of being crowded out by whatever
-// is trending hardest (e.g. a World Cup) on a given day.
-function trimByCategory(markets, perCategoryLimit) {
+// Keep only the top N markets per category so every category stays
+// represented instead of being crowded out by whatever is trending
+// hardest (e.g. a World Cup) on a given day. Most slots go to open
+// markets ranked by 24h volume; a handful are reserved for markets
+// that resolved in the last few days so their outcome stays visible.
+function trimByCategory(markets, perCategoryLimit, recentClosedSlots) {
   const byCategory = new Map();
   for (const m of markets) {
     if (!byCategory.has(m.category)) byCategory.set(m.category, []);
@@ -122,8 +135,15 @@ function trimByCategory(markets, perCategoryLimit) {
 
   const trimmed = [];
   for (const group of byCategory.values()) {
-    group.sort((a, b) => b.volume24hr - a.volume24hr);
-    trimmed.push(...group.slice(0, perCategoryLimit));
+    const open = group.filter((m) => !m.closed);
+    const recentlyClosed = group.filter((m) => m.closed);
+
+    open.sort((a, b) => b.volume24hr - a.volume24hr);
+    recentlyClosed.sort((a, b) => b.volume - a.volume);
+
+    const openSlots = perCategoryLimit - recentClosedSlots;
+    trimmed.push(...open.slice(0, openSlots));
+    trimmed.push(...recentlyClosed.slice(0, recentClosedSlots));
   }
 
   trimmed.sort((a, b) => b.volume24hr - a.volume24hr);

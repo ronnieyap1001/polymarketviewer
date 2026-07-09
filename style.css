@@ -72,7 +72,7 @@ main {
   margin-bottom: 0.8rem;
 }
 
-#search, #category {
+#search, #category, #statusFilter {
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -99,8 +99,16 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  min-width: 720px;
+  min-width: 1240px;
+  table-layout: fixed;
 }
+
+th:nth-child(2), td:nth-child(2) { width: 24%; }
+th:nth-child(3), td:nth-child(3) { width: 8%; }
+th:nth-child(4), td:nth-child(4),
+th:nth-child(5), td:nth-child(5) { width: 8%; }
+th:nth-child(6), td:nth-child(6),
+th:nth-child(7), td:nth-child(7) { width: 13%; }
 
 thead th {
   position: sticky;
@@ -150,13 +158,53 @@ tbody tr:hover { background: var(--row-hover); }
 .market-link:hover { text-decoration: underline; }
 
 .outcome {
-  white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .outcome .pct { color: var(--muted); }
 
-.status {
+.other-outcomes {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ratio {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.status-chip {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-chip.open {
+  background: color-mix(in srgb, var(--up) 16%, transparent);
+  color: var(--up);
+}
+
+.status-chip.closed {
+  background: color-mix(in srgb, var(--down) 14%, transparent);
+  color: var(--down);
+}
+
+.status-detail {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.status-row {
   text-align: center;
   color: var(--muted);
   padding: 2rem 0.8rem;

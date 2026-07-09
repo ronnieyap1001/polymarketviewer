@@ -3,9 +3,15 @@
 A simple website that tracks Polymarket markets, refreshed daily, grouped by category.
 
 - **Data source**: Polymarket's public [Gamma API](https://docs.polymarket.com/api-reference/introduction) (`https://gamma-api.polymarket.com`) — no API key needed.
-- **Collection**: `scripts/collect.mjs` pulls active markets, tags each one with a top-level category (Politics, Sports, Crypto, Elections, World, Economy, Culture, Tech, Business, Science, Weather, Middle East, or Other), keeps the top 50 by 24h volume per category, and writes `data/markets.json`. It also appends a one-line daily summary to `data/history.jsonl`.
+- **Collection**: `scripts/collect.mjs` pulls active markets plus anything that resolved in the last 3 days, tags each one with a top-level category (Politics, Sports, Crypto, Elections, World, Economy, Culture, Tech, Business, Science, Weather, Middle East, or Other), keeps the top 50 per category (mostly ranked by 24h volume, with a few reserved slots for recently-closed markets), and writes `data/markets.json`. It also appends a one-line daily summary to `data/history.jsonl`.
 - **Automation**: `.github/workflows/collect-daily.yml` runs the collector every day via GitHub Actions and commits the updated `data/markets.json` back to the repo — no server to run or maintain.
-- **Site**: `index.html` + `app.js` + `style.css` is a plain static page (no build step) that fetches `data/markets.json` and renders a sortable, filterable, searchable table.
+- **Site**: `index.html` + `app.js` + `style.css` is a plain static page (no build step) that fetches `data/markets.json` and renders a sortable, filterable, searchable table with:
+  - Category, market question, and a link to the market on Polymarket
+  - **Status** — Open or Closed, with the winning outcome once resolved
+  - **Started / Ends** — the market's start and end dates
+  - **Leading Outcome** and **Other Outcomes** — up to 3 outcomes total with their implied probabilities
+  - **Hi/Lo Ratio** — highest outcome probability divided by the lowest, as a quick read on how lopsided a market is (higher = more one-sided)
+  - **24h Volume** and **Total Volume**
 
 ## Running the collector locally
 

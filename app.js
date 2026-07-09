@@ -1,10 +1,12 @@
 const DATA_URL = "data/markets.json";
+const COLUMN_COUNT = 10;
 
 const state = {
   markets: [],
   filtered: [],
   category: "",
   search: "",
+  statusFilter: "",
   sortKey: "volume24hr",
   sortDir: "desc",
 };
@@ -13,6 +15,7 @@ const els = {
   meta: document.getElementById("meta"),
   search: document.getElementById("search"),
   category: document.getElementById("category"),
+  statusFilter: document.getElementById("statusFilter"),
   rowCount: document.getElementById("rowCount"),
   tbody: document.getElementById("table-body"),
   headers: document.querySelectorAll("#markets-table th[data-key]"),
@@ -32,22 +35,55 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-function leadingOutcome(market) {
+// Outcomes sorted by implied probability, highest first.
+function rankedOutcomes(market) {
   const { outcomes, outcomePrices } = market;
-  if (!outcomes?.length || !outcomePrices?.length) return { label: "—", pct: null };
-  let best = 0;
-  for (let i = 1; i < outcomePrices.length; i++) {
-    if (outcomePrices[i] > outcomePrices[best]) best = i;
+  if (!outcomes?.length || !outcomePrices?.length) return [];
+  return outcomes
+    .map((label, i) => ({ label, pct: outcomePrices[i] ?? null }))
+    .filter((o) => o.pct !== null)
+    .sort((a, b) => b.pct - a.pct);
+}
+
+function leadingOutcome(market) {
+  const ranked = rankedOutcomes(market);
+  return ranked[0] || { label: "—", pct: null };
+}
+
+// Up to 2 outcomes besides the leading one, e.g. for markets with 3+ options.
+function otherOutcomes(market) {
+  return rankedOutcomes(market).slice(1, 3);
+}
+
+// How lopsided the market is: highest implied probability divided by the
+// lowest. A value near 1 means a close race; a large value means one
+// outcome is heavily favored.
+function hiLoRatio(market) {
+  const ranked = rankedOutcomes(market);
+  if (ranked.length < 2) return null;
+  const hi = ranked[0].pct;
+  const lo = ranked[ranked.length - 1].pct;
+  if (lo <= 0) return Infinity;
+  return hi / lo;
+}
+
+function statusInfo(market) {
+  if (!market.closed) {
+    return { open: true, label: "Open", detail: null };
   }
-  return { label: outcomes[best], pct: outcomePrices[best] };
+  const lead = leadingOutcome(market);
+  const detail = lead.pct != null ? `${lead.label} won` : "Resolved";
+  return { open: false, label: "Closed", detail };
 }
 
 function render() {
-  const { search, category } = state;
+  const { search, category, statusFilter } = state;
   const q = search.trim().toLowerCase();
 
   state.filtered = state.markets.filter((m) => {
     if (category && m.category !== category) return false;
+    if (statusFilter === "open" && m.closed) return false;
+    if (statusFilter === "closed" && !m.closed) return false;
     if (q && !m.question.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -58,9 +94,18 @@ function render() {
     if (sortKey === "leadOutcome") {
       av = leadingOutcome(a).pct ?? -1;
       bv = leadingOutcome(b).pct ?? -1;
-    } else if (sortKey === "endDate") {
-      av = a.endDate ? new Date(a.endDate).getTime() : 0;
-      bv = b.endDate ? new Date(b.endDate).getTime() : 0;
+    } else if (sortKey === "ratio") {
+      av = hiLoRatio(a) ?? -1;
+      bv = hiLoRatio(b) ?? -1;
+    } else if (sortKey === "otherOutcomes") {
+      av = otherOutcomes(a)[0]?.pct ?? -1;
+      bv = otherOutcomes(b)[0]?.pct ?? -1;
+    } else if (sortKey === "status") {
+      av = a.closed ? 0 : 1;
+      bv = b.closed ? 0 : 1;
+    } else if (sortKey === "endDate" || sortKey === "startDate") {
+      av = a[sortKey] ? new Date(a[sortKey]).getTime() : 0;
+      bv = b[sortKey] ? new Date(b[sortKey]).getTime() : 0;
     } else if (sortKey === "category" || sortKey === "question") {
       av = (a[sortKey] || "").toLowerCase();
       bv = (b[sortKey] || "").toLowerCase();
@@ -76,7 +121,7 @@ function render() {
   els.rowCount.textContent = `${state.filtered.length} market${state.filtered.length === 1 ? "" : "s"}`;
 
   if (state.filtered.length === 0) {
-    els.tbody.innerHTML = `<tr><td colspan="6" class="status">No markets match your filters.</td></tr>`;
+    els.tbody.innerHTML = `<tr><td colspan="${COLUMN_COUNT}" class="status-row">No markets match your filters.</td></tr>`;
     return;
   }
 
@@ -84,14 +129,32 @@ function render() {
     .map((m) => {
       const lead = leadingOutcome(m);
       const pct = lead.pct != null ? `<span class="pct">${(lead.pct * 100).toFixed(0)}%</span>` : "";
+
+      const others = otherOutcomes(m);
+      const othersText = others.length
+        ? others.map((o) => `${escapeHtml(o.label)} ${(o.pct * 100).toFixed(0)}%`).join(", ")
+        : "—";
+
+      const ratio = hiLoRatio(m);
+      const ratioText = ratio === null ? "—" : ratio === Infinity ? "∞" : `${ratio.toFixed(1)}x`;
+
+      const status = statusInfo(m);
+      const statusHtml = `
+        <span class="status-chip ${status.open ? "open" : "closed"}">${status.label}</span>
+        ${status.detail ? `<span class="status-detail">${escapeHtml(status.detail)}</span>` : ""}`;
+
       return `
         <tr>
           <td><span class="category-chip">${escapeHtml(m.category)}</span></td>
           <td><a class="market-link" href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.question)}</a></td>
+          <td>${statusHtml}</td>
+          <td>${formatDate(m.startDate)}</td>
+          <td>${formatDate(m.endDate)}</td>
           <td class="outcome">${escapeHtml(lead.label)} ${pct}</td>
+          <td class="other-outcomes">${othersText}</td>
+          <td class="num ratio">${ratioText}</td>
           <td class="num">${formatMoney(m.volume24hr)}</td>
           <td class="num">${formatMoney(m.volume)}</td>
-          <td>${formatDate(m.endDate)}</td>
         </tr>`;
     })
     .join("");
@@ -140,6 +203,11 @@ els.category.addEventListener("change", (e) => {
   render();
 });
 
+els.statusFilter.addEventListener("change", (e) => {
+  state.statusFilter = e.target.value;
+  render();
+});
+
 async function init() {
   try {
     const res = await fetch(DATA_URL, { cache: "no-store" });
@@ -161,7 +229,7 @@ async function init() {
     render();
   } catch (err) {
     els.meta.textContent = "Could not load market data.";
-    els.tbody.innerHTML = `<tr><td colspan="6" class="status">${escapeHtml(err.message)}</td></tr>`;
+    els.tbody.innerHTML = `<tr><td colspan="${COLUMN_COUNT}" class="status-row">${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
