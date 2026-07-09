@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Polymarket Daily Tracker</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="page-header">
+    <h1>Polymarket Daily Tracker</h1>
+    <p class="subtitle">
+      Top Polymarket markets collected daily from the public
+      <a href="https://docs.polymarket.com/api-reference/introduction" target="_blank" rel="noopener">Gamma API</a>.
+    </p>
+    <p class="meta" id="meta">Loading&hellip;</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search markets&hellip;" aria-label="Search markets" />
+      <select id="category" aria-label="Filter by category">
+        <option value="">All categories</option>
+      </select>
+      <span class="count" id="rowCount"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="markets-table">
+        <thead>
+          <tr>
+            <th data-key="category">Category</th>
+            <th data-key="question">Market</th>
+            <th data-key="leadOutcome">Leading Outcome</th>
+            <th data-key="volume24hr" class="num sort-desc">24h Volume</th>
+            <th data-key="volume" class="num">Total Volume</th>
+            <th data-key="endDate">Ends</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="6" class="status">Loading markets&hellip;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      Data refreshes once a day via a scheduled GitHub Action that pulls from Polymarket's
+      Gamma API. Not financial advice.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

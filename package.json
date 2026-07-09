@@ -1,0 +1,13 @@
+{
+  "name": "polymarketviewer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Daily-updated table of Polymarket markets by category, powered by the public Gamma API.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "collect": "node scripts/collect.mjs"
+  }
+}
