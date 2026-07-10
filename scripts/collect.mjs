@@ -5,7 +5,7 @@
 // Docs: https://docs.polymarket.com/api-reference/introduction
 // Gamma API base: https://gamma-api.polymarket.com (no auth required)
 
-import { writeFile, mkdir, appendFile } from "node:fs/promises";
+import { writeFile, readFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -173,16 +173,44 @@ async function main() {
     JSON.stringify(snapshot, null, 2) + "\n"
   );
 
-  const historyLine =
-    JSON.stringify({
-      date: collectedAt.slice(0, 10),
-      collectedAt,
-      count: markets.length,
-      byCategory,
-    }) + "\n";
-  await appendFile(path.join(DATA_DIR, "history.jsonl"), historyLine);
+  await writeHistory(path.join(DATA_DIR, "history.jsonl"), {
+    date: collectedAt.slice(0, 10),
+    collectedAt,
+    count: markets.length,
+    byCategory,
+  });
 
   console.log(`Collected ${markets.length} markets across ${snapshot.categories.length} categories.`);
+}
+
+// Appends a summary entry to history.jsonl but keeps only a rolling window
+// (last HISTORY_RETENTION_DAYS days, hard-capped at HISTORY_MAX_ENTRIES) so the
+// file can't grow without bound now that we collect every 15 minutes.
+async function writeHistory(file, entry) {
+  const HISTORY_RETENTION_DAYS = 7;
+  const HISTORY_MAX_ENTRIES = 2000;
+  const cutoff = Date.now() - HISTORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+
+  let existing = [];
+  try {
+    const raw = await readFile(file, "utf8");
+    existing = raw
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter((e) => e && e.collectedAt && new Date(e.collectedAt).getTime() >= cutoff);
+  } catch {
+    // No history file yet — start fresh.
+  }
+
+  const kept = [...existing, entry].slice(-HISTORY_MAX_ENTRIES);
+  await writeFile(file, kept.map((e) => JSON.stringify(e)).join("\n") + "\n");
 }
 
 main().catch((err) => {
