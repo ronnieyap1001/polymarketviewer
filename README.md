@@ -7,15 +7,22 @@ A simple website that tracks Polymarket markets, refreshed daily, grouped by cat
 - **Automation**: `.github/workflows/collect-daily.yml` runs the collector every day via GitHub Actions and commits the updated `data/markets.json` back to the repo — no server to run or maintain.
 - **Site**: `index.html` + `app.js` + `style.css` is a plain static page (no build step) that fetches `data/markets.json` and renders a sortable, filterable, searchable table with:
   - Category, market question, and a link to the market on Polymarket
-  - **Status** — Open or Closed, with the winning outcome once resolved
+  - **Status** — Open, Overdue, or Closed (see below)
+  - **Winning Entity** — the name of the outcome that won, once a market is closed
   - **Started / Ends** — the market's start and end dates
   - **Leading Outcome** and **Other Outcomes** — up to 3 outcomes total with their implied probabilities
-  - **Hi/Lo Ratio** — highest outcome probability divided by the lowest, as a quick read on how lopsided a market is (higher = more one-sided)
+  - **Hi/Lo Ratio** — highest outcome probability divided by the lowest, as a quick read on how lopsided a market is (higher = more one-sided). Capped at 1000x (shown as `1000x+`) instead of showing Infinity for fully-resolved 0%/100% markets.
   - **24h Volume** and **Total Volume**
 
-  Besides the category/status dropdowns and search box, a **Filters** panel adds range
-  filters for start date, end date, Hi/Lo ratio, minimum 24h volume, and minimum total
-  volume, with a "Clear filters" button to reset them all.
+  **Status** has three states: **Open** (still trading), **Overdue** (Polymarket hasn't
+  closed it yet even though its scheduled end date has passed — common while a
+  real-world event's outcome is still being confirmed), and **Closed** (resolved, with
+  the winner in the Winning Entity column).
+
+  Besides the category dropdown and search box, a **Filters** panel (containing the
+  status filter alongside the rest) adds range filters for start date, end date, Hi/Lo
+  ratio, minimum 24h volume, and minimum total volume, with a "Clear filters" button to
+  reset them all.
 
   An **Export CSV** button downloads the current view (respecting all active filters,
   search, and sort order) as a CSV file. The row count is capped by the adjacent "Export

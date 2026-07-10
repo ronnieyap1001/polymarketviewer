@@ -23,11 +23,6 @@
       <select id="category" aria-label="Filter by category">
         <option value="">All categories</option>
       </select>
-      <select id="statusFilter" aria-label="Filter by status">
-        <option value="">Open &amp; closed</option>
-        <option value="open">Open only</option>
-        <option value="closed">Closed only</option>
-      </select>
       <button id="toggleFilters" type="button" class="filters-toggle" aria-expanded="false">Filters</button>
       <span class="count" id="rowCount"></span>
     </div>
@@ -41,6 +36,16 @@
     </div>
 
     <div class="filters-panel" id="filtersPanel" hidden>
+      <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <select id="statusFilter" aria-label="Filter by status">
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="overdue">Overdue</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+
       <div class="filter-group">
         <span class="filter-label">Started</span>
         <input id="startFrom" type="date" aria-label="Started on or after" />
@@ -96,6 +101,7 @@
             <th data-key="category">Category</th>
             <th data-key="question">Market</th>
             <th data-key="status">Status</th>
+            <th data-key="winningEntity">Winning Entity</th>
             <th data-key="startDate">Started</th>
             <th data-key="endDate">Ends</th>
             <th data-key="leadOutcome">Leading Outcome</th>
@@ -106,7 +112,7 @@
           </tr>
         </thead>
         <tbody id="table-body">
-          <tr><td colspan="10" class="status-row">Loading markets&hellip;</td></tr>
+          <tr><td colspan="11" class="status-row">Loading markets&hellip;</td></tr>
         </tbody>
       </table>
     </div>

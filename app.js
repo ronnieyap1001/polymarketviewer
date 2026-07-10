@@ -1,6 +1,9 @@
 const DATA_URL = "data/markets.json";
-const COLUMN_COUNT = 10;
+const COLUMN_COUNT = 11;
 const EXPORT_MAX_ROWS = 2000; // hard cap regardless of what's typed into the export box
+const MIN_PRICE = 0.001; // floor used in place of 0 so the hi/lo ratio can't blow up to Infinity
+const MAX_RATIO = 1000; // display/sort cap for fully-resolved (near 100%/0%) markets
+const TODAY_STR = new Date().toISOString().slice(0, 10);
 
 const state = {
   markets: [],
@@ -89,23 +92,42 @@ function otherOutcomes(market) {
 
 // How lopsided the market is: highest implied probability divided by the
 // lowest. A value near 1 means a close race; a large value means one
-// outcome is heavily favored.
+// outcome is heavily favored. Capped at MAX_RATIO (via the MIN_PRICE floor)
+// so a fully-resolved 0%/100% market shows a finite number instead of
+// Infinity.
 function hiLoRatio(market) {
   const ranked = rankedOutcomes(market);
   if (ranked.length < 2) return null;
   const hi = ranked[0].pct;
-  const lo = ranked[ranked.length - 1].pct;
-  if (lo <= 0) return Infinity;
-  return hi / lo;
+  const lo = Math.max(ranked[ranked.length - 1].pct, MIN_PRICE);
+  return Math.min(hi / lo, MAX_RATIO);
+}
+
+function formatRatio(ratio) {
+  if (ratio === null) return "—";
+  return ratio >= MAX_RATIO ? `${MAX_RATIO}x+` : `${ratio.toFixed(1)}x`;
+}
+
+// A market is "overdue" when Polymarket hasn't closed it yet but its
+// scheduled end date has already passed (common while a real-world event
+// is still being confirmed/resolved).
+function isOverdue(market) {
+  if (market.closed) return false;
+  const endStr = toDateStr(market.endDate);
+  return Boolean(endStr && endStr < TODAY_STR);
 }
 
 function statusInfo(market) {
-  if (!market.closed) {
-    return { open: true, label: "Open", detail: null };
-  }
+  if (market.closed) return { kind: "closed", label: "Closed" };
+  if (isOverdue(market)) return { kind: "overdue", label: "Overdue" };
+  return { kind: "open", label: "Open" };
+}
+
+// Name of the outcome that won, once a market has closed. Null otherwise.
+function winningEntity(market) {
+  if (!market.closed) return null;
   const lead = leadingOutcome(market);
-  const detail = lead.pct != null ? `${lead.label} won` : "Resolved";
-  return { open: false, label: "Closed", detail };
+  return lead.pct != null ? lead.label : null;
 }
 
 function csvField(value) {
@@ -114,7 +136,7 @@ function csvField(value) {
 }
 
 const CSV_HEADERS = [
-  "Category", "Market", "Status", "Result", "Started", "Ends",
+  "Category", "Market", "Status", "Winning Entity", "Started", "Ends",
   "Leading Outcome", "Leading %", "Other Outcomes",
   "Hi/Lo Ratio", "24h Volume", "Total Volume", "URL",
 ];
@@ -131,13 +153,13 @@ function marketToCsvRow(m) {
     m.category,
     m.question,
     status.label,
-    status.detail || "",
+    winningEntity(m) || "",
     m.startDate ? toDateStr(m.startDate) : "",
     m.endDate ? toDateStr(m.endDate) : "",
     lead.label,
     lead.pct != null ? (lead.pct * 100).toFixed(0) : "",
     others,
-    ratio === null ? "" : ratio === Infinity ? "Inf" : ratio.toFixed(2),
+    ratio === null ? "" : ratio.toFixed(2),
     m.volume24hr ?? 0,
     m.volume ?? 0,
     m.url,
@@ -192,8 +214,7 @@ function render() {
 
   state.filtered = state.markets.filter((m) => {
     if (category && m.category !== category) return false;
-    if (statusFilter === "open" && m.closed) return false;
-    if (statusFilter === "closed" && !m.closed) return false;
+    if (statusFilter && statusInfo(m).kind !== statusFilter) return false;
     if (q && !m.question.toLowerCase().includes(q)) return false;
 
     const startStr = toDateStr(m.startDate);
@@ -229,8 +250,12 @@ function render() {
       av = otherOutcomes(a)[0]?.pct ?? -1;
       bv = otherOutcomes(b)[0]?.pct ?? -1;
     } else if (sortKey === "status") {
-      av = a.closed ? 0 : 1;
-      bv = b.closed ? 0 : 1;
+      const order = { open: 0, overdue: 1, closed: 2 };
+      av = order[statusInfo(a).kind];
+      bv = order[statusInfo(b).kind];
+    } else if (sortKey === "winningEntity") {
+      av = (winningEntity(a) || "").toLowerCase();
+      bv = (winningEntity(b) || "").toLowerCase();
     } else if (sortKey === "endDate" || sortKey === "startDate") {
       av = a[sortKey] ? new Date(a[sortKey]).getTime() : 0;
       bv = b[sortKey] ? new Date(b[sortKey]).getTime() : 0;
@@ -264,18 +289,22 @@ function render() {
         : "—";
 
       const ratio = hiLoRatio(m);
-      const ratioText = ratio === null ? "—" : ratio === Infinity ? "∞" : `${ratio.toFixed(1)}x`;
+      const ratioText = formatRatio(ratio);
 
       const status = statusInfo(m);
-      const statusHtml = `
-        <span class="status-chip ${status.open ? "open" : "closed"}">${status.label}</span>
-        ${status.detail ? `<span class="status-detail">${escapeHtml(status.detail)}</span>` : ""}`;
+      const statusHtml = `<span class="status-chip ${status.kind}">${status.label}</span>`;
+
+      const winner = winningEntity(m);
+      const winnerHtml = winner
+        ? `<span class="winning-entity">${escapeHtml(winner)}</span>`
+        : `<span class="winning-entity empty">—</span>`;
 
       return `
         <tr>
           <td><span class="category-chip">${escapeHtml(m.category)}</span></td>
           <td><a class="market-link" href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.question)}</a></td>
           <td>${statusHtml}</td>
+          <td>${winnerHtml}</td>
           <td>${formatDate(m.startDate)}</td>
           <td>${formatDate(m.endDate)}</td>
           <td class="outcome">${escapeHtml(lead.label)} ${pct}</td>
@@ -333,11 +362,13 @@ els.category.addEventListener("change", (e) => {
 
 els.statusFilter.addEventListener("change", (e) => {
   state.statusFilter = e.target.value;
+  updateFiltersToggleState();
   render();
 });
 
 function updateFiltersToggleState() {
   const active =
+    state.statusFilter ||
     state.startFrom || state.startTo || state.endFrom || state.endTo ||
     state.ratioMin !== null || state.ratioMax !== null ||
     state.vol24hrMin || state.volumeMin;
@@ -392,9 +423,11 @@ els.exportLimit.addEventListener("change", () => {
 
 els.clearFilters.addEventListener("click", () => {
   Object.assign(state, {
+    statusFilter: "",
     startFrom: "", startTo: "", endFrom: "", endTo: "",
     ratioMin: null, ratioMax: null, vol24hrMin: 0, volumeMin: 0,
   });
+  els.statusFilter.value = "";
   els.startFrom.value = "";
   els.startTo.value = "";
   els.endFrom.value = "";

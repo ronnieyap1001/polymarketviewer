@@ -9,6 +9,7 @@
   --chip-bg: #eef0fb;
   --up: #0f9d58;
   --down: #d93025;
+  --warn: #b45309;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,6 +21,7 @@
     --row-hover: #1d1f26;
     --accent: #8b8bf0;
     --chip-bg: #232544;
+    --warn: #f0b429;
   }
 }
 
@@ -72,7 +74,7 @@ main {
   margin-bottom: 0.8rem;
 }
 
-#search, #category, #statusFilter {
+#search, #category {
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -218,16 +220,17 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  min-width: 1240px;
+  min-width: 1380px;
   table-layout: fixed;
 }
 
-th:nth-child(2), td:nth-child(2) { width: 24%; }
-th:nth-child(3), td:nth-child(3) { width: 8%; }
-th:nth-child(4), td:nth-child(4),
-th:nth-child(5), td:nth-child(5) { width: 8%; }
-th:nth-child(6), td:nth-child(6),
-th:nth-child(7), td:nth-child(7) { width: 13%; }
+th:nth-child(2), td:nth-child(2) { width: 21%; }
+th:nth-child(3), td:nth-child(3) { width: 7%; }
+th:nth-child(4), td:nth-child(4) { width: 10%; }
+th:nth-child(5), td:nth-child(5),
+th:nth-child(6), td:nth-child(6) { width: 7%; }
+th:nth-child(7), td:nth-child(7),
+th:nth-child(8), td:nth-child(8) { width: 12%; }
 
 thead th {
   position: sticky;
@@ -316,11 +319,18 @@ tbody tr:hover { background: var(--row-hover); }
   color: var(--down);
 }
 
-.status-detail {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.78rem;
+.status-chip.overdue {
+  background: color-mix(in srgb, var(--warn) 18%, transparent);
+  color: var(--warn);
+}
+
+.winning-entity {
+  font-weight: 500;
+}
+
+.winning-entity.empty {
   color: var(--muted);
+  font-weight: 400;
 }
 
 .status-row {
