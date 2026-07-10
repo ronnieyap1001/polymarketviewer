@@ -1,0 +1,48 @@
+name: Collect Polymarket data
+
+on:
+  schedule:
+    # Every 15 minutes. This is the practical maximum for this setup:
+    #   - Actions minutes are free & unlimited on public repos, so cost is not the limit.
+    #   - GitHub's cron floor is 5 min, but schedules below ~15 min are frequently
+    #     delayed or dropped under load, so 15 min is the fastest *reliable* cadence.
+    #   - Each run that finds new data commits once, which rebuilds GitHub Pages;
+    #     4 builds/hour stays well under Pages' ~10 builds/hour soft limit.
+    # To push harder you could set "*/5 * * * *", but expect late runs and Pages throttling.
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+# Avoid piling up overlapping runs if one is slow; let the in-progress run finish.
+concurrency:
+  group: collect-polymarket
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run collector
+        run: node scripts/collect.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/markets.json data/history.jsonl
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: Polymarket data collection"
+            git push
+          fi

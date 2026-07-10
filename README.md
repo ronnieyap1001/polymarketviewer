@@ -1,10 +1,11 @@
 # Polymarket Viewer
 
-A simple website that tracks Polymarket markets, refreshed daily, grouped by category.
+A simple website that tracks Polymarket markets, refreshed every 15 minutes, grouped by category.
 
-- **Data source**: Polymarket's public [Gamma API](https://docs.polymarket.com/api-reference/introduction) (`https://gamma-api.polymarket.com`) — no API key needed.
-- **Collection**: `scripts/collect.mjs` pulls active markets plus anything that resolved in the last 3 days, tags each one with a top-level category (Politics, Sports, Crypto, Elections, World, Economy, Culture, Tech, Business, Science, Weather, Middle East, or Other), keeps the top 50 per category (mostly ranked by 24h volume, with a few reserved slots for recently-closed markets), and writes `data/markets.json`. It also appends a one-line daily summary to `data/history.jsonl`.
-- **Automation**: `.github/workflows/collect-daily.yml` runs the collector every day via GitHub Actions and commits the updated `data/markets.json` back to the repo — no server to run or maintain.
+- **Data source**: Polymarket's public [Gamma API](https://docs.polymarket.com/api-reference/introduction) (`https://gamma-api.polymarket.com`) — free, no API key needed.
+- **Collection**: `scripts/collect.mjs` pulls active markets plus anything that resolved in the last 3 days, tags each one with a top-level category (Politics, Sports, Crypto, Elections, World, Economy, Culture, Tech, Business, Science, Weather, Middle East, or Other), keeps the top 50 per category (mostly ranked by 24h volume, with a few reserved slots for recently-closed markets), and writes `data/markets.json`. It also appends a one-line summary per run to `data/history.jsonl`.
+- **Automation**: `.github/workflows/collect.yml` runs the collector every 15 minutes via GitHub Actions and commits the updated `data/markets.json` back to the repo — no server to run or maintain.
+- **Why 15 minutes?** GitHub Actions is free and unlimited on public repos, so cost isn't the limiting factor. The practical ceiling is GitHub's cron reliability (schedules below ~15 min are often delayed under load) and GitHub Pages' ~10-builds/hour soft limit (each commit rebuilds Pages). Every 15 min = 4 builds/hour, comfortably within both while staying free. To go faster, change the `cron` line in the workflow to e.g. `*/5 * * * *` (5-min floor), accepting occasional late runs and possible Pages throttling.
 - **Site**: `index.html` + `app.js` + `style.css` is a plain static page (no build step) that fetches `data/markets.json` and renders a sortable, filterable, searchable table with:
   - Category, market question, and a link to the market on Polymarket
   - **Status** — Open, Overdue, or Closed (see below)
@@ -54,13 +55,16 @@ Then open the printed URL in a browser.
 2. Under "Build and deployment", set **Source** to "Deploy from a branch".
 3. Pick the `main` branch and `/ (root)` folder, then save.
 
-GitHub will publish the site at `https://<owner>.github.io/<repo>/`. Once the daily
-Action runs, the page will show that day's data automatically — no rebuild step needed
-since the page fetches `data/markets.json` at load time.
+GitHub will publish the site at `https://<owner>.github.io/<repo>/`. Each time the
+Action commits new data, Pages redeploys and the page shows the latest snapshot
+automatically — no rebuild step needed since the page fetches `data/markets.json` at
+load time.
 
 ## Notes
 
 - The `workflow_dispatch` trigger lets you run the collector on demand from the
-  Actions tab instead of waiting for the daily schedule.
+  Actions tab instead of waiting for the schedule.
+- Data is a periodic snapshot (every 15 min), not a live feed, so prices can lag
+  Polymarket.com by up to that interval.
 - Prices shown are the leading outcome's implied probability (last traded price),
   not guaranteed payouts.
