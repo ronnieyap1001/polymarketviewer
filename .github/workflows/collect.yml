@@ -11,6 +11,13 @@ on:
     # To push harder you could set "*/5 * * * *", but expect late runs and Pages throttling.
     - cron: "*/15 * * * *"
   workflow_dispatch: {}
+  # Also run when the collector or this workflow changes, so a code push refreshes
+  # data immediately. Deliberately scoped to these files only — the bot's own
+  # data/ commits are NOT listed here, so they can't retrigger the job (no loop).
+  push:
+    paths:
+      - "scripts/collect.mjs"
+      - ".github/workflows/collect.yml"
 
 # Avoid piling up overlapping runs if one is slow; let the in-progress run finish.
 concurrency:
