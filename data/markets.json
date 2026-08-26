@@ -1,5 +1,5 @@
 {
-  "collectedAt": "2026-08-26T06:18:17.745Z",
+  "collectedAt": "2026-08-26T07:26:06.619Z",
   "count": 603,
   "categories": [
     "Business",
@@ -1434,30 +1434,6 @@
       "url": "https://polymarket.com/event/what-price-will-bitcoin-hit-in-august-2026"
     },
     {
-      "id": "3859617",
-      "question": "Cincinnati Reds vs. San Francisco Giants: O/U 7.5",
-      "category": "Sports",
-      "eventTitle": "Cincinnati Reds vs. San Francisco Giants",
-      "eventSlug": "mlb-cin-sf-2026-08-25",
-      "marketSlug": "mlb-cin-sf-2026-08-25-total-7pt5",
-      "outcomes": [
-        "Over",
-        "Under"
-      ],
-      "outcomePrices": [
-        0.106,
-        0.894
-      ],
-      "volume": 120696.03596499993,
-      "volume24hr": 120696.03596499999,
-      "liquidity": 78431.83814,
-      "startDate": "2026-08-24",
-      "endDate": "2026-08-26",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/mlb-cin-sf-2026-08-25"
-    },
-    {
       "id": "3501952",
       "question": "Strait of Hormuz traffic returns to normal by September 15?",
       "category": "Politics",
@@ -2128,30 +2104,6 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/us-ceasefire-against-iran-continues-throughptptpt"
-    },
-    {
-      "id": "3605835",
-      "question": "Will Real Salt Lake win on 2026-08-25?",
-      "category": "Sports",
-      "eventTitle": "Club León FC vs. Real Salt Lake",
-      "eventSlug": "lec-leo-rsl-2026-08-25",
-      "marketSlug": "lec-leo-rsl-2026-08-25-rsl",
-      "outcomes": [
-        "Yes",
-        "No"
-      ],
-      "outcomePrices": [
-        0.085,
-        0.915
-      ],
-      "volume": 67589.558674,
-      "volume24hr": 66016.77884600002,
-      "liquidity": 184305.7683,
-      "startDate": "2026-08-15",
-      "endDate": "2026-08-26",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/lec-leo-rsl-2026-08-25"
     },
     {
       "id": "3096412",
@@ -3402,30 +3354,6 @@
       "url": "https://polymarket.com/event/spider-man-brand-new-day-total-domestic-gross-by-august-31-20260716181307512"
     },
     {
-      "id": "3720842",
-      "question": "Will there be a run scored in the first inning?: Milwaukee Brewers vs. New York Mets",
-      "category": "Sports",
-      "eventTitle": "Milwaukee Brewers vs. New York Mets",
-      "eventSlug": "mlb-mil-nym-2026-08-25",
-      "marketSlug": "mlb-mil-nym-2026-08-25-nrfi",
-      "outcomes": [
-        "Yes",
-        "No"
-      ],
-      "outcomePrices": [
-        0.0005,
-        0.9995
-      ],
-      "volume": 37873.418425,
-      "volume24hr": 37566.74570100001,
-      "liquidity": 2911.71279,
-      "startDate": "2026-08-19",
-      "endDate": "2026-09-01",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/mlb-mil-nym-2026-08-25"
-    },
-    {
       "id": "1088477",
       "question": "Will Taylor Fritz win the 2026 Men's US Open?",
       "category": "Sports",
@@ -3568,30 +3496,6 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/which-cartel-leaders-will-be-arrested-in-2026"
-    },
-    {
-      "id": "3859615",
-      "question": "Spread: San Francisco Giants (-1.5)",
-      "category": "Sports",
-      "eventTitle": "Cincinnati Reds vs. San Francisco Giants",
-      "eventSlug": "mlb-cin-sf-2026-08-25",
-      "marketSlug": "mlb-cin-sf-2026-08-25-spread-home-1pt5",
-      "outcomes": [
-        "San Francisco Giants",
-        "Cincinnati Reds"
-      ],
-      "outcomePrices": [
-        0.845,
-        0.155
-      ],
-      "volume": 33016.189596000004,
-      "volume24hr": 33008.294861,
-      "liquidity": 77555.1249,
-      "startDate": "2026-08-24",
-      "endDate": "2026-08-26",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/mlb-cin-sf-2026-08-25"
     },
     {
       "id": "1321561",
@@ -4218,6 +4122,30 @@
       "url": "https://polymarket.com/event/itf-paolett-triquar-2026-08-25"
     },
     {
+      "id": "1088486",
+      "question": "Will Jiri Lehecka win the 2026 Men's US Open?",
+      "category": "Sports",
+      "eventTitle": "2026 Men’s US Open Winner (Tennis)",
+      "eventSlug": "2026-mens-us-open-winner-tennis",
+      "marketSlug": "will-jiri-lehecka-win-the-2026-mens-us-open",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.0085,
+        0.9915
+      ],
+      "volume": 569834.2730459999,
+      "volume24hr": 26740.383465,
+      "liquidity": 49688.47098,
+      "startDate": "2026-01-02",
+      "endDate": "2026-09-13",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/2026-mens-us-open-winner-tennis"
+    },
+    {
       "id": "2941318",
       "question": "Will Alphabet be the largest company in the world by market cap on August 31?",
       "category": "Tech",
@@ -4288,6 +4216,78 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/crude-oil-all-time-high-by"
+    },
+    {
+      "id": "3859577",
+      "question": "Chicago Cubs vs. Arizona Diamondbacks: O/U 7.5",
+      "category": "Sports",
+      "eventTitle": "Chicago Cubs vs. Arizona Diamondbacks",
+      "eventSlug": "mlb-chc-ari-2026-08-25",
+      "marketSlug": "mlb-chc-ari-2026-08-25-total-7pt5",
+      "outcomes": [
+        "Over",
+        "Under"
+      ],
+      "outcomePrices": [
+        0.52,
+        0.48
+      ],
+      "volume": 25940.342287000007,
+      "volume24hr": 25940.342286999996,
+      "liquidity": 4.5,
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-26",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/mlb-chc-ari-2026-08-25"
+    },
+    {
+      "id": "1088475",
+      "question": "Will Alexander Zverev win the 2026 Men's US Open?",
+      "category": "Sports",
+      "eventTitle": "2026 Men’s US Open Winner (Tennis)",
+      "eventSlug": "2026-mens-us-open-winner-tennis",
+      "marketSlug": "will-alexander-zverev-win-the-2026-mens-us-open",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.208,
+        0.792
+      ],
+      "volume": 455561.2441829999,
+      "volume24hr": 25773.702526,
+      "liquidity": 57972.2582,
+      "startDate": "2026-01-02",
+      "endDate": "2026-09-13",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/2026-mens-us-open-winner-tennis"
+    },
+    {
+      "id": "608566",
+      "question": "Will Rodri win the 2026 Ballon d'Or?",
+      "category": "Sports",
+      "eventTitle": "Ballon d'Or Winner 2026",
+      "eventSlug": "ballon-dor-winner-2026",
+      "marketSlug": "will-rodri-win-the-2026-ballon-dor",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.075,
+        0.925
+      ],
+      "volume": 1231196.9408139996,
+      "volume24hr": 25519.505713,
+      "liquidity": 105552.2193,
+      "startDate": "2025-09-22",
+      "endDate": "2026-10-31",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/ballon-dor-winner-2026"
     },
     {
       "id": "3829627",
@@ -5586,30 +5586,6 @@
       "url": "https://polymarket.com/event/will-the-iranian-regime-fall-by-the-end-of-2026"
     },
     {
-      "id": "3876071",
-      "question": "Jynxzi vs Speed: who wins in FIFA?",
-      "category": "Culture",
-      "eventTitle": "Jynxzi vs Speed: who wins in...?",
-      "eventSlug": "jynxzi-vs-speed-who-wins-inptptpt",
-      "marketSlug": "jynxzi-vs-speed-who-wins-in-fifa",
-      "outcomes": [
-        "Jynxzi",
-        "Speed"
-      ],
-      "outcomePrices": [
-        0.0095,
-        0.9905
-      ],
-      "volume": 14969.058774000001,
-      "volume24hr": 14969.058773999997,
-      "liquidity": 1198.41539,
-      "startDate": "2026-08-25",
-      "endDate": "2026-08-25",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/jynxzi-vs-speed-who-wins-inptptpt"
-    },
-    {
       "id": "3831633",
       "question": "Will the highest temperature in Singapore be 33°C on August 26?",
       "category": "Weather",
@@ -6208,30 +6184,6 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/fed-rate-hike-in-2026"
-    },
-    {
-      "id": "3794951",
-      "question": "Will the highest temperature in Paris be 29°C on August 25?",
-      "category": "Weather",
-      "eventTitle": "Highest temperature in Paris on August 25?",
-      "eventSlug": "highest-temperature-in-paris-on-august-25-2026",
-      "marketSlug": "highest-temperature-in-paris-on-august-25-2026-29c",
-      "outcomes": [
-        "Yes",
-        "No"
-      ],
-      "outcomePrices": [
-        0.9995,
-        0.0005
-      ],
-      "volume": 20809.415941999992,
-      "volume24hr": 11173.143459999998,
-      "liquidity": 33885.80661,
-      "startDate": "2026-08-23",
-      "endDate": "2026-08-25",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/highest-temperature-in-paris-on-august-25-2026"
     },
     {
       "id": "3795038",
@@ -6930,30 +6882,6 @@
       "url": "https://polymarket.com/event/highest-temperature-in-hong-kong-on-august-26-2026"
     },
     {
-      "id": "3828411",
-      "question": "Will the highest temperature in Dallas be between 100-101°F on August 25?",
-      "category": "Weather",
-      "eventTitle": "Highest temperature in Dallas on August 25?",
-      "eventSlug": "highest-temperature-in-dallas-on-august-25-2026",
-      "marketSlug": "highest-temperature-in-dallas-on-august-25-2026-100-101f",
-      "outcomes": [
-        "Yes",
-        "No"
-      ],
-      "outcomePrices": [
-        0.9995,
-        0.0005
-      ],
-      "volume": 11625.620030000002,
-      "volume24hr": 9162.871426000002,
-      "liquidity": 3372.24677,
-      "startDate": "2026-08-24",
-      "endDate": "2026-08-25",
-      "closed": false,
-      "closedTime": null,
-      "url": "https://polymarket.com/event/highest-temperature-in-dallas-on-august-25-2026"
-    },
-    {
       "id": "3831534",
       "question": "Will the highest temperature in Seoul (Incheon) be 29°C on August 26?",
       "category": "Weather",
@@ -7528,6 +7456,30 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/largest-company-end-of-september-1785358369147"
+    },
+    {
+      "id": "2054710",
+      "question": "Will \"Polymarket\" be said on ICEMAN?",
+      "category": "Culture",
+      "eventTitle": "What will be said on ICEMAN?",
+      "eventSlug": "what-will-be-said-on-iceman",
+      "marketSlug": "will-polymarket-be-said-on-iceman",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.555,
+        0.445
+      ],
+      "volume": 15016.62584,
+      "volume24hr": 7819.899976,
+      "liquidity": 641.807,
+      "startDate": "2026-04-22",
+      "endDate": "2026-05-15",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/what-will-be-said-on-iceman"
     },
     {
       "id": "3128585",
@@ -8610,6 +8562,30 @@
       "url": "https://polymarket.com/event/mojtaba-khamenei-public-appearance-by"
     },
     {
+      "id": "3828393",
+      "question": "Will the highest temperature in Seattle be between 86-87°F on August 25?",
+      "category": "Weather",
+      "eventTitle": "Highest temperature in Seattle on August 25?",
+      "eventSlug": "highest-temperature-in-seattle-on-august-25-2026",
+      "marketSlug": "highest-temperature-in-seattle-on-august-25-2026-86-87f",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.0005,
+        0.9995
+      ],
+      "volume": 6773.202754,
+      "volume24hr": 5750.266396,
+      "liquidity": 1800.34858,
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-25",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/highest-temperature-in-seattle-on-august-25-2026"
+    },
+    {
       "id": "3501346",
       "question": "Will Russia target Kyiv on August 25, 2026?",
       "category": "Other",
@@ -8728,6 +8704,30 @@
       "closed": false,
       "closedTime": null,
       "url": "https://polymarket.com/event/largest-company-end-of-december-2026"
+    },
+    {
+      "id": "3831619",
+      "question": "Will the highest temperature in Shanghai be 29°C on August 26?",
+      "category": "Weather",
+      "eventTitle": "Highest temperature in Shanghai on August 26?",
+      "eventSlug": "highest-temperature-in-shanghai-on-august-26-2026",
+      "marketSlug": "highest-temperature-in-shanghai-on-august-26-2026-29c",
+      "outcomes": [
+        "Yes",
+        "No"
+      ],
+      "outcomePrices": [
+        0.0005,
+        0.9995
+      ],
+      "volume": 6347.052700000001,
+      "volume24hr": 5419.7447,
+      "liquidity": 19728.72848,
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-26",
+      "closed": false,
+      "closedTime": null,
+      "url": "https://polymarket.com/event/highest-temperature-in-shanghai-on-august-26-2026"
     },
     {
       "id": "679049",
